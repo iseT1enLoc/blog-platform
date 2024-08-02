@@ -32,5 +32,5 @@ func main() {
 	r.GET("/", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "passing middlewares successfully")
 	})
-	r.Run("localhost:8080")
+	r.Run("localhost:8081")
 }
