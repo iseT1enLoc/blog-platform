@@ -1,4 +1,4 @@
-package infras
+package component
 
 import "gorm.io/gorm"
 

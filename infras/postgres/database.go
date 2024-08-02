@@ -1,34 +1,18 @@
-package appconfig
+package database
 
 import (
+	"blog-platform-go/component/appconfig"
 	"fmt"
 	"log"
 	"time"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func LoadConfig() (*AppConfig, error) {
-	env, err := godotenv.Read()
-
-	if err != nil {
-		log.Fatalf("There is some error while loading .env %s", err)
-	}
-	return &AppConfig{
-		Port:       env["PORT"],
-		Env:        env["REMOTE_CONNECTION_STRING"],
-		DBUsername: env["USERNAME"],
-		DBPassword: env["PASSWORD"],
-		DBHost:     env["HOST"],
-		DBDatabase: env["DATABASE"],
-		SecretKey:  env["SECRETKEY"],
-	}, err
-}
-func ConnectDatabaseWithRetryIn20s(cfg *AppConfig) (*gorm.DB, error) {
+func ConnectDatabaseWithRetryIn20s(cfg *appconfig.AppConfig) (*gorm.DB, error) {
 	const timeRetry = 20 * time.Second
-	var connectDatabase = func(cfg *AppConfig) (*gorm.DB, error) {
+	var connectDatabase = func(cfg *appconfig.AppConfig) (*gorm.DB, error) {
 		psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+
 			"password=%s dbname=%s sslmode=disable",
 			cfg.DBHost, cfg.Port, cfg.DBUsername, cfg.DBPassword, cfg.DBDatabase)

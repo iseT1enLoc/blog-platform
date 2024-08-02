@@ -1,7 +1,7 @@
 package user
 
 import (
-	domain "blog-platform-go/domain/users_repo"
+	domain "blog-platform-go/domain/users"
 	"context"
 	"time"
 )

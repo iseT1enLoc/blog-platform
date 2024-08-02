@@ -1,24 +1,24 @@
 package middlewares
 
 import (
-	"blog-platform-go/common"
-	infras "blog-platform-go/infras/appctx"
+	component "blog-platform-go/component/appctx"
+	"blog-platform-go/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Recover(appCtx infras.AppContext) gin.HandlerFunc {
+func Recover(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
 				c.Header("Content-Type", "application/json")
 
-				if appErr, ok := err.(*common.AppError); ok {
+				if appErr, ok := err.(*utils.AppError); ok {
 					c.AbortWithStatusJSON(appErr.StatusCode, appErr)
 					panic(err)
 				}
 
-				appErr := common.ErrInternal(err.(error))
+				appErr := utils.ErrInternal(err.(error))
 				c.AbortWithStatusJSON(appErr.StatusCode, appErr)
 				panic(err)
 			}

@@ -1,7 +1,7 @@
 package user
 
 import (
-	domain "blog-platform-go/domain/users_repo"
+	domain "blog-platform-go/domain/users"
 	"context"
 	"time"
 )
@@ -11,7 +11,7 @@ type SignUpUseCase struct {
 	contextTimeOut time.Duration
 }
 
-func NewUserCase(user_repo domain.IUserRepository, contextTimeOut time.Duration) domain.ISignUpUseCase {
+func NewSignUpUseCase(user_repo domain.IUserRepository, contextTimeOut time.Duration) domain.ISignUpUseCase {
 	return &SignUpUseCase{
 		user_repo:      user_repo,
 		contextTimeOut: contextTimeOut,
@@ -30,10 +30,16 @@ func (s *SignUpUseCase) CreateRefreshToken(user *domain.User, secret string, exp
 
 // CreateUser implements domain.ISignUpUseCase.
 func (s *SignUpUseCase) CreateUser(c context.Context, user *domain.User) error {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, s.contextTimeOut)
+	defer cancel()
+	_, err := s.user_repo.CreateUser(ctx, user)
+	return err
 }
 
 // GetUserByEmail implements domain.ISignUpUseCase.
 func (s *SignUpUseCase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, s.contextTimeOut)
+	defer cancel()
+	user, err := s.user_repo.GetUserByEmail(ctx, email)
+	return user, err
 }
