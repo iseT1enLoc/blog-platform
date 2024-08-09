@@ -1,17 +1,24 @@
 package utils
 
 import (
+	jwt_custom "blog-platform-go/domain/jwt"
 	domain "blog-platform-go/domain/users"
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
-	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
+	exp := time.Now().Add(time.Hour * time.Duration(expiry))
 
-	claims := &domain.JwtCustomClaims{}
+	claims := &jwt_custom.JwtCustomClaims{
+		Name: user.Name,
+		ID:   user.Id.String(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(exp),
+		},
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	t, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -21,10 +28,10 @@ func CreateAccessToken(user *domain.User, secret string, expiry int) (accessToke
 }
 
 func CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
-	claimsRefresh := &domain.JwtCustomRefreshClaims{
-		ID: user.ID.Hex(),
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * time.Duration(expiry)).Unix(),
+	claimsRefresh := &jwt_custom.JwtCustomRefreshClaims{
+		ID: user.Id.String(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * time.Duration(expiry))),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claimsRefresh)

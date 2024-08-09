@@ -49,6 +49,22 @@ func (su *SignUpHandler) SignUp() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error while create user"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "create user successfully"})
+
+		accessToken, err := su.SignupUseCase.CreateAccessToken(&user, "Secret access key", 3600)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating access token"})
+			return
+		}
+
+		refreshToken, err := su.SignupUseCase.CreateRefreshToken(&user, "Secret refresh token", 3600)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error creating refresh token"})
+			return
+		}
+		signupResponse := domain.SignUpResponse{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		}
+		c.JSON(http.StatusOK, signupResponse)
 	}
 }

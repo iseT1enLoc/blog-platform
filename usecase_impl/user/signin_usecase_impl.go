@@ -2,6 +2,7 @@ package user
 
 import (
 	domain "blog-platform-go/domain/users"
+	"blog-platform-go/utils"
 	"context"
 	"time"
 )
@@ -20,15 +21,17 @@ func NewSignInUseCase(user_repo domain.IUserRepository, contextTimeOut time.Dura
 
 // CreateAccessToken implements domain.ISignInUsecase.
 func (s *SignInUseCase) CreateAccessToken(user *domain.User, secret string, expiry int) (accessToken string, err error) {
-	panic("unimplemented")
+	return utils.CreateAccessToken(user, secret, expiry)
 }
 
 // CreateRefreshToken implements domain.ISignInUsecase.
 func (s *SignInUseCase) CreateRefreshToken(user *domain.User, secret string, expiry int) (refreshToken string, err error) {
-	panic("unimplemented")
+	return utils.CreateRefreshToken(user, secret, expiry)
 }
 
 // GetUserByEmail implements domain.ISignInUsecase.
 func (s *SignInUseCase) GetUserByEmail(c context.Context, email string) (domain.User, error) {
-	panic("unimplemented")
+	ctx, cancel := context.WithTimeout(c, s.contextTimeOut)
+	defer cancel()
+	return s.user_repo.GetUserByEmail(ctx, email)
 }
